@@ -19,6 +19,10 @@ Supported newlines:
     process::exit(0);
 }
 
+pub fn conv_line(line: &String, nl: &str) -> String {
+    return format!("{}{}", line, nl);
+}
+
 fn run_app(args: &Vec<String>) {
     if args.len() < 2 {
         usage();
@@ -36,11 +40,25 @@ fn run_app(args: &Vec<String>) {
     }
 
     for line in stdin.lock().lines() {
-        print!("{}{}", line.unwrap(), nl);
+        let s: String = conv_line(&line.unwrap(), nl);
+        print!("{}", s);
     }
 }
 
 fn main() {
     let args: Vec<String> = env::args().collect();
     run_app(&args);
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::conv_line;
+
+    #[test]
+    fn test_conv_line() {
+        assert_eq!(conv_line(&String::from(""), "\n"), "\n");
+        assert_eq!(conv_line(&String::from(""), "\r"), "\r");
+        assert_eq!(conv_line(&String::from(""), "\r\n"), "\r\n");
+        assert_eq!(conv_line(&String::from("abc"), "\n"), "abc\n");
+    }
 }
